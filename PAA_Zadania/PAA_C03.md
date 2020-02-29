@@ -1,12 +1,10 @@
-# Praca z Git w serwisie  GitHub
-
-## Zmiana nazwy projektu
+# Praca z repozytoriami na platformie GitHub
 
 Zaloguj się do serwisu GitHub i przejdź do repozytorium, które utworzyłeś na poprzednich zajęciach. Przejdź do zakładki *Settings* i w polu *Repository name* wpisz *projekt-paa*. Zapisz zmiany klikając na przycisk *Rename*.
 
 ![](images/github-zmiana-nazwy-repo.png)
 
-## Konfiguracja dostępu przez SSH
+## 1. Konfiguracja dostępu SSH oraz praca z plikami
 
 Aby móc pracować z repozytorium w serwisie GitHub bez podawania nazwy użytkownika oraz hasła, należy dodać publiczny klucz SSH w ustawieniach konta.
 
@@ -76,7 +74,7 @@ git clone <adres-repozytorium>
 
 Jeżeli podałeś hasło do klucza SSH (passphrase) podczas jego tworzenia, zostaniesz o nie zapytany. Po podaniu hasła, repozytorium zostanie sklonowane do katalogu bieżącego. Jeżeli zostałeś zapytany o nazwę użytkownika i hasło to znaczy, że klucz SSH nie został poprawnie dodany.
 
-**Usuwanie plików z repozytorium**
+### Usuwanie plików z repozytorium
 Niektóre repozytoria zawierają pliki i katalogi dodane przez przypadek podczas pierwszych ćwiczeń. Lista plików i katalogów, które powinny znajdować się w repozytorium znajduje się na poniższym zrzucie ekranu:
 
 ![](images/github-lista-plikow.png)
@@ -111,7 +109,7 @@ Wypchnij zmiany z repozytorium lokalnego do serwisu GitHub:
 git push origin master
 ```
 
-**Dodanie pliku README.md**
+### Dodawanie plików do repozytorium
 
 Otwórz [Azure Cloud Shell](https://shell.azure.com) i przejdź do katalogu projektu:
 
@@ -119,7 +117,7 @@ Otwórz [Azure Cloud Shell](https://shell.azure.com) i przejdź do katalogu proj
 cd projekt-paa
 ```
 
-Utwórz nowy plik *README.md* i otwórz go do edycji:
+Utwórz nowy plik i otwórz go do edycji:
 
 ```sh
 touch README.md && nano README.md
@@ -139,9 +137,8 @@ git push origin master
 
 Sprawdź w serwisie GitHub czy plik README.md znajduje się w repozytorium.
 
-**Utworzenie gałęzi (na ocenę 4)**
-
+## 2. Tworzenie gałęzi
 Utwórz nową gałąź o nazwie *develop* w repozytorium lokalnym, a następnie wypchnij ją do repozytorium w serwisie GitHub.
 
-**Zmiana treści commit message (na ocenę 5)**
-Zmień lokalnie treść pierwszego commita na *Utworzenie projektu* w obu gałęziach a następnie wypchnij zmiany do repozytorium serwisu GitHub. Jeżeli posiadasz dwa commity (z poprzednich zajęć oraz usunięcie plików) złącz je w jeden o tej samej treści.
+## 3. Modyfikacja historii
+Zmień lokalnie treść pierwszego commita na *Utworzenie projektu* w obu gałęziach, a następnie wypchnij zmiany do repozytorium zdalnego. Jeżeli posiadasz dwa commity (z poprzednich zajęć oraz usunięcie plików) złącz je w jeden o tej samej treści.
