@@ -1,46 +1,14 @@
-# Praca z platformą Azure
+# Tworzenie i wdrażanie aplikacji w Node.js
 
-## Logowanie na platformie Azure
+## Zadanie 1
+Utwórz konto w serwisie [GitHub](https://github.com). Jeżeli posiadasz już konto, możesz użyć na zajęciach. Utwórz nowe repozytorium z poniższymi ustawieniami:
 
-Zaloguj się do [portalu Azure](https://portal.azure.com) za pomocą swojego adresu e-mail w domenie uczelni.
+![](images/github-tworzenie-repo.png)
 
-## Aktywacja subskrypcji
+## Zadanie 2
+Utwórz maszynę wirtualną z systemem Ubuntu i zainstaluj na niej narzędzia Azure CLI i NVM (Node Version Manager). Następnie korzystajć z NVM zainstaluj Node.js w wersji 10.15.
 
-Po zalogowaniu, skonfiguruj swoją subskrypcję dla studentów. W tym celu przejdź na stronę [Azure dla studentów](https://azure.microsoft.com/pl-pl/free/students/) i kliknij przycisk Aktywuj teraz. Po przeniesieniu do nowej strony, wypełnij formularz i aktywuj subskrypcję.
-
-## Sprawdzanie dostępnych środków
-
-Stan środków dla subskrypcji dla studentów można sprawdzić pod [tym adresem](https://www.microsoftazuresponsorships.com/). Po otwarciu strony, kliknij na **Check your balance**.
-
-## Praca z usługą Azure Cloud Shell
-
-Usługa Azure Cloud Shell umożliwia zarządzanie zasobami platformy Azure z poziomu wiersza poleceń (Bash lub PowerShell) bezpośrednio w przeglądarce internetowej.
-
-### Logowanie do usługi
-
-Przejdź na stronę usługi [Azure Cloud Shell](https://shell.azure.com). Jeżeli nie jesteś zalogowany na platformie Azure, zaloguj się teraz.
-
-### Tworzenie magazynu
-
-Jeżeli wcześniej nie korzystałeś z usługi Azure Cloud Shell, wyświetli się komunikat o braku zainstalowanego magazynu.
-
-![](./images/PAA_C01_Tworzenie_magazynu.png)
-
-Kliknij na przycisk **Utwórz magazyn** aby utworzyć magazyn a następnie przejść do interaktywnego terminala.
-
-![](./images/PAA_C01_Cloud_shell.png)
-
-Wszystkie polecenia na ćwiczeniach będą wykonywane w powłoce Bash. Do przełączania się między powłokami służy menu znajdujące się w lewym górnym rogu usługi Azure Cloud Shell.
-
-![](./images/PAA_C01_Bash.png)
-
-## Zarządzanie maszynami wirtualnymi
-
-Wszystkie poniższe kroki należy wykonać z poziomu Azure Cloud Shell korzystając z narzędzi wiersza poleceń Azure CLI. Dla każdego polecenia można uzyskać szczegółową pomoc dodając argument `--help`.
-
-**Wartości w nawiasach ostrych należy zmienić na swoje własne.**
-
-Utwórz grupę zasobów o dowolnej nazwie:
+1. Utwórz grupę zasobów:
 
 ```sh
 az group create \
@@ -48,25 +16,19 @@ az group create \
   --location westeurope
 ```
 
-Utwórz maszynę wirtualną o dowolnej nazwie:
+2. Utwórz maszynę wirtualną:
 
 ```sh
 az vm create \
   --resource-group <nazwa-grupy-zasobów> \
   --name <nazwa-maszyny-wirtualnej> \
-  --size Standard_B2s \
+  --size Standard_B1s \
   --image UbuntuLTS \
   --admin-username <nazwa-użytkownika> \
   --generate-ssh-keys
 ```
 
-Zaloguj się do utworzonej maszyny wirtualnej korzystając z SSH:
-
-```sh
-ssh <nazwa-użytkownika>@<adres-ip-maszyny-wirtualnej>
-```
-
-Adres maszyny wirtualnej można pobrać poleceniem `az vm list-ip-addresses` (kolumna `PublicIPAddresses`):
+3. Pobierz publiczny adres IP maszyny wirtualnej:
 
 ```sh
 az vm list-ip-addresses \
@@ -75,27 +37,161 @@ az vm list-ip-addresses \
   --output table
 ```
 
-Wyloguj się z maszyny wirtualnej:
+4. Zaloguj się przez SSH do maszyny wirtualnej:
 
 ```sh
-logout
+ssh <nazwa-użytkownika>@<adres-ip-maszyny-wirtualnej>
 ```
 
-Usuń maszynę wirtualną:
+5. Zainstaluj Azure CLI:
 
 ```sh
-az vm delete \
-  --resource-group <nazwa-groupy-zasobów> \
-  --name <nazwa-maszyny-wirtualnej>
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 ```
 
-Usuń grupę zasobów:
+6. Zainstaluj NVM:
 
 ```sh
-az group delete \
-  --name <nazwa-grupy-zasobów>
-  --yes
-  --no-wait
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
 ```
 
-Usunięcie grupy zasobów powoduje również usunięcie wszystkich zasobów z tej grupy. Nie ma więc potrzeby usuwania maszyny wirtualnej przed usunięciem grupy zasobów.
+Wyloguj a następnie zaloguj się ponowanie do maszyny wirtualnej.
+
+7. Zainstaluj Node.js:
+
+```sh
+nvm install 10.15
+```
+
+## Zadanie 3
+Sklonuj projekt z serwisu GitHub. W katalogu projektu wygeneruj aplikację korzystając z narzędzia koa-generator i przetestuj jej działanie lokalnie. Utwórz aplikację internetową w usłudze Azure App Service i wdróż do niej utworzony projekt korzystając z opcji wdrażania z lokalnych repozytoriów Git. Przetestuj jej działanie w przeglądarce internetowej. Zatwierdź zmiany w projekcie (git commit) a następnie wypchnij je do repozytorium w serwisie GitHub.
+
+1. Pobierz adres URL repozytorium z serwisu GitHub:
+
+![](images/github-klonowanie-repo.png)
+
+2. Sklonuj repozytorium projektu:
+
+```sh
+git clone <adres-url-repozytorium>
+```
+
+3. Przejdź do katalogu z projektem:
+
+```sh
+cd projekt-paa
+```
+
+4. Wygeneruj aplikację narzędziem koa-generator:
+
+```sh
+npx koa-generator
+```
+
+5. Zainstaluj zależności:
+
+```sh
+npm install
+```
+
+6. Zaloguj się do Azure:
+
+```sh
+az login
+```
+
+Postępuj zgodnie z instrukcją wyświetloną na ekranie.
+
+7. Otwórz port na maszynie wirtualnej:
+
+```sh
+az vm open-port \
+  --resource-group <nazwa-grupy-zasobów> \
+  --name <nazwa-maszyny-wirtualnej> \
+  --port 3000
+```
+
+8. Uruchom aplikację:
+
+```sh
+npm start
+```
+
+9. Otwórz przeglądarkę internetową i sprawdź działanie aplikacji:
+
+![](images/aplikacja-vm.png)
+
+10. Zatrzymaj aplikację skrótem klawiszowym `ctrl+c`.
+
+11. Utwórz plan usługi App Service:
+
+```sh
+az appservice plan create \
+  --resource-group <nazwa-grupy-zasobów> \
+  --name <nazwa-planu> \
+  --sku FREE
+```
+
+12. Utwórz aplikację usługi App Service:
+
+```sh
+az webapp create \
+  --resource-group <nazwa-grupy-zasobów> \
+  --plan <nazwa-planu> \
+  --name <nazwa-aplikacji> \
+  --runtime "node|10.15" \
+  --deployment-local-git
+```
+
+13. Skonfiguruj użytkownika wdrożenia
+
+```sh
+az webapp deployment user set \
+  --user-name <nazwa-użytkownika> \
+  --password <hasło-użytkownika>
+```
+
+14. Pobierz URL repozytorium wdrożenia:
+
+```sh
+url=$(az webapp deployment source config-local-git \
+  --resource-group <nazwa-grupy-zasobów> \
+  --name <nazwa-aplikacji> \
+  --query url \
+  --output tsv)
+```
+
+15. Dodaj repozytorium zdalne:
+
+```sh
+git remote add azure $url
+```
+
+16. Ustaw użytkownika Git (dwa polecenia):
+
+```sh
+git config --global user.name "<imię-i-nazwisko>"
+git config --global user.email "<adres-email>"
+```
+
+17. Dodaj pliki:
+
+```sh
+git add --all
+```
+
+18. Zatwierdź zmianę:
+
+```sh
+git commit -m 'Utworzono projekt'
+```
+
+19. Wypchnij zmiany do repozytorium aplikacji App Service:
+
+```sh
+git push azure master
+```
+
+20. Otwórz przeglądarkę internetową i sprawdź działanie aplikacji:
+
+![](images/aplikacja-app-service.png)

@@ -1,144 +1,123 @@
-# Praca z repozytoriami na platformie GitHub
+# Ciągłe wdrażanie z użyciem GitHub Actions
 
-Zaloguj się do serwisu GitHub i przejdź do repozytorium, które utworzyłeś na poprzednich zajęciach. Przejdź do zakładki *Settings* i w polu *Repository name* wpisz *projekt-paa*. Zapisz zmiany klikając na przycisk *Rename*.
+## Zadanie 1
+Skonfiguruj wdrażanie aplikacji Azure App Service za pomocą funkcji GitHub Actions w taki sposób aby odbywało się na każde wypchnięcie zmian do gałęzi master.
 
-![](images/github-zmiana-nazwy-repo.png)
-
-## 1. Konfiguracja dostępu SSH oraz praca z plikami
-
-Aby móc pracować z repozytorium w serwisie GitHub bez podawania nazwy użytkownika oraz hasła, należy dodać publiczny klucz SSH w ustawieniach konta.
-
-**Tworzenie nowego klucza SSH**
-Zaloguj się do [Azure Cloud Shell](https://shell.azure.com) a następnie utwórz parę kluczy SSH przeznaczoną dla serwisu GitHub:
+1. Zaloguj się do maszyny wirtualnej:
 
 ```sh
-ssh-keygen -t rsa -b 4096 -C "<adres-email>"
+ssh <nazwa-użytkownika>@<adres-ip-maszyny-wirtualnej>
 ```
 
-Jako adres email podaj adres użyty do utworzenia konta w serwisie GitHub. Podczas pytania o ścieżkę do pliku wpisz `~/.ssh/github`. Podczas pytania o hasło (passphrase) wpisz dowolne hasło, które posłuży do ochrony klucza (pole można pozostawić puste, ale wpływa to na obniżenie bezpieczeństwa). Sprawdź czy para kluczy (pliki o nazwach github oraz github.pub) została utworzona:
+2. Przejdź do katalogu projektu:
 
 ```sh
-ls ~/.ssh
+cd <nazwa-projektu>
 ```
 
-**Dodawanie klucza publicznego w serwisie GitHub**
-Wyświetl zawartość klucza publicznego w terminalu i skopiuj go do schowka:
+3. Przełącz się na gałąź *master*:
 
 ```sh
-cat ~/.ssh/github.pub
+git checkout master
 ```
 
-Przejdź do ustawień w serwisie GitHub. Z menu w lewym górnym rogu wybierz *Settings*.
-
-![](images/github-menu-ustawienia.png)
-
-Następnie przejdź do zakładki *SSH and GPG keys* i kliknij na przycisk *New SSH key*.
-
-![](images/github-ustawienia-ssh.png)
-
-W polu *Title* podaj nazwę klucza (dowolna, np. Azure Cloud Shell). W polu *Key* wklej publiczny klucz SSH. Kliknij na przycisk *Add SSH key*
-
-![](images/github-dodawanie-klucza-ssh.png)
-
-
-Na liście kluczy powinien znaleźć się twój klucz publiczny.
-
-![](images/github-lista-kluczy-ssh.png)
-
-Przejdź do [Azure Cloud Shell](https://shell.azure.com) i edytuj plik z ustawieniami SSH:
+4. Utwórz nowy katalog:
 
 ```sh
-nano ~/.ssh/config
+mkdir -p .github/workflows
 ```
 
-Wklej następującą zawartość a następnie zapisz plik skrótem klawiszowym *ctrl+o* i zamknij edytor skrótem *ctrl+x* (potwierdź wyjście klawiszem *enter*):
-
-```
-Host github.com
-  Hostname github.com
-  User git
-  IdentityFile ~/.ssh/github
-```
-
-Powyższe konfiguruje narzędzie SSH do korzystania z klucza o nazwie *github* do uwierzytelniania w serwisie GitHub.
-
-Przejdź do strony repozytorium projektu. Kliknij przycisk *Clone or download*, przełącz na *Use SSH* i skopiuj adres repozytorium do schowka klikając przycisk obok adresu repozytorium.
-
-![](images/github-klonowanie-repo.png)
-
-Otwórz [Azure Cloud Shell](https://shell.azure.com) i sklonuj repozytorium:
-
-```
-git clone <adres-repozytorium>
-```
-
-Jeżeli podałeś hasło do klucza SSH (passphrase) podczas jego tworzenia, zostaniesz o nie zapytany. Po podaniu hasła, repozytorium zostanie sklonowane do katalogu bieżącego. Jeżeli zostałeś zapytany o nazwę użytkownika i hasło to znaczy, że klucz SSH nie został poprawnie dodany.
-
-### Usuwanie plików z repozytorium
-Niektóre repozytoria zawierają pliki i katalogi dodane przez przypadek podczas pierwszych ćwiczeń. Lista plików i katalogów, które powinny znajdować się w repozytorium znajduje się na poniższym zrzucie ekranu:
-
-![](images/github-lista-plikow.png)
-
-Wszystkie pozostałe pliki i katalogi powinny zostać usunięte. Otwórz [Azure Cloud Shell](https://shell.azure.com) i przejdź do katalogu projektu:
+5. Utwórz plik YAML:
 
 ```sh
-cd projekt-paa
+touch .github/workflows/azure.yml
 ```
 
-Wylistuj zawartość katalogu:
+6. Otwórz plik YAML do edycji:
 
 ```sh
-ls -l
+nano .github/workflows/azure.yml
 ```
 
-Jeżeli widzisz pliki lub katalogi, które nie powinny znaleźć się w repozytorium usuń je. Do usunięcia pliku wykorzystaj polecenie `rm <nazwa-pliku>` a do usunięcia katalogu `rm -r <nazwa-katalogu>`. Po usunięciu, sprawdź status:
+7. Opisz zadanie wdrożenia:
+
+```yaml
+on:
+  push:
+    branches:
+      - master
+
+env:
+  AZURE_WEBAPP_NAME: <nazwa-aplikacji>
+  AZURE_WEBAPP_PACKAGE_PATH: '.'
+  NODE_VERSION: '10.15'
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    - name: Install dependencies
+      run: |
+        npm install
+    - name: 'Deploy to Azure WebApp'
+      uses: azure/webapps-deploy@v1
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+```
+
+Zastąp `<nazwa-aplikacji>` nazwą swojej aplikacji App Service.
+
+8. Pobierz profil publikowania aplikacji App Service z Azure Portal klikając przycisk *Pobierz profil publikowania* na stronie głównej aplikacji:
+
+![](images/app-service-pobierz-profil-publikowania.png)
+
+9. Otwórz pobrany plik i skopiuj jego zawartość do schowka.
+
+10. Przejdź do repozytorium projektu w serwisie [GitHub](https://github.com) a następnie do zakładki *Settings* i *Secrets*:
+
+![](images/github-sekrety.png)
+
+11. Kliknij przycisk *Add new secret*. W polu *Name* wpisz AZURE_WEBAPP_PUBLIC_PROFILE a w polu *Value* wklej zawartość skopiowaną do schowka:
+
+![](images/github-dodaj-sekret.png)
+
+12. Kliknij przycisk *Add secret* i sprawdź czy na liście pojawił się nowy wpis:
+
+![](images/github-lista-sekretow.png)
+
+13. Dodaj pliki:
 
 ```sh
-git status
+git add .github/workflows/azure.yml
 ```
 
-Powinna wyświetlić się lista plików, które usunąłeś. Dodaj zmiany a następnie utwórz commit:
+14. Zatwierdź zmianę:
 
 ```sh
-git add --all && git commit -m "Usuń zbędne pliki z repozytorium"
+git commit -m 'Dodano integrację z GitHub Actions'
 ```
 
-Wypchnij zmiany z repozytorium lokalnego do serwisu GitHub:
-
-```sh
-git push origin master
-```
-
-### Dodawanie plików do repozytorium
-
-Otwórz [Azure Cloud Shell](https://shell.azure.com) i przejdź do katalogu projektu:
-
-```sh
-cd projekt-paa
-```
-
-Utwórz nowy plik i otwórz go do edycji:
-
-```sh
-touch README.md && nano README.md
-```
-
-Dodaj plik do staging area a następnie utwórz nowy commit:
-
-```sh
-git add README.md && git commit -m "Dodaj plik README"
-```
-
-Wypchij zmiany z lokalnego repozytorium do serwisu GitHub:
+15. Wypchnij zmiany do repozytorium w serwisie GitHub:
 
 ```sh
 git push origin master
 ```
 
-Sprawdź w serwisie GitHub czy plik README.md znajduje się w repozytorium.
+16. Przejdź do repozytorium projektu w serwisie GitHub a następnie do zakładki *Actions*. Sprawdź czy na liście znajduje się nowy wpis:
 
-## 2. Tworzenie gałęzi
-Utwórz nową gałąź o nazwie *develop* w repozytorium lokalnym, a następnie wypchnij ją do repozytorium w serwisie GitHub.
+![](images/github-lista-przeplywow.png)
 
-## 3. Modyfikacja historii
-Zmień lokalnie treść pierwszego commita na *Utworzenie projektu* w obu gałęziach, a następnie wypchnij zmiany do repozytorium zdalnego. Jeżeli posiadasz dwa commity (z poprzednich zajęć oraz usunięcie plików) złącz je w jeden o tej samej treści.
+## Zadanie 2
+Utwórz dodatkowe miejsce wdrożenia w aplikacji App Service o nazwie *deploy* oraz gałąź w repozytorium o tej samej nazwie. Skonfiguruj automatyczne wdrażanie aplikacji z GitHub do Azure App Service za pomocą funkcji GitHub Actions, które będzie się odbywać w momencie wypchnięcia zmian na gałęzi *deploy*.
+
+## Zadanie 3
+Utwórz nową gałąź o nazwie *test* z gałęzi *master*. Dodaj nowe zadanie o nazwie *Run tests* do pliku przepływu, które uruchomi testy aplikacji (polecenie npm run tests). Zatwierdź zmiany (git commit) z komunikatem o treści *Dodano automatyczne uruchamianie testów*. Wypchnij zmiany (git push) z gałęzi *test* do repozytorium w serwisie GitHub i sprawdź czy wykonanie nowej akcji zakończyło się niepowodzeniem.

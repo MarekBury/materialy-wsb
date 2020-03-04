@@ -1,217 +1,133 @@
-# Tworzenie i wdrażanie aplikacji
+# Praca z repozytoriami w serwisie GitHub
 
-## Tworzenie konta w serwisie GitHub
+## Zadanie 1
+Skonfiguruj dostęp do repozytoriów w serwisie GitHub za pomocą klucza SSH. Usuń niepotrzebne pliki z repozytorium dodane podczas tworzenia repozytorium i generowania aplikacji. Dodaj plik README.md i wypchnij zmiany do repozytorium w serwisie GitHub.
 
-Utwórz konto na platformie [GitHub](https://github.com). Jeżeli posiadasz już konto, możesz użyć je do pracy nad projektem.
-
-## Tworzenie repozytorium w serwise GitHub
-
-Zaloguj się w serwisie [GitHub](https://github.com) i utwórz nowe repozytorium git tak jak na poniższym zrzucie ekranu (podaj dowolną nazwę repozytorium).
-
-![](./images/PAA_C02_GitHub.png)
-
-## Tworzenie środowiska pracy
-
-Zaloguj się do [Azure Cloud Shell](https://shell.azure.com). Upewnij się, że korzystasz ze środowiska **Bash**.
-
-**Tworzenie maszyny wirtualnej**
-
- Utwórz grupę zasobów:
+1. Utwórz parę kluczy SSH:
 
 ```sh
-az group create \
-  --name <grupa-zasobów> \
-  --location westeurope
+ssh-keygen -t rsa -b 4096 -C "<adres-email>"
 ```
 
-Utwórz maszynę wirtualną:
+Na pytanie o ścieżkę podaj /home/<nazwa-użytkownika>/.ssh/github. Na pytanie o hasło (passphrase) naciśnij klawisz Enter albo podaj hasło zabezpieczające klucz.
+
+2. Sprawdź czy para kluczy została utworzona:
 
 ```sh
-az vm create \
-  --resource-group <grupa-zasobów> \
-  --name <nazwa-maszyny-wirtualnej> \
-  --size Standard_B2s \
-  --image UbuntuLTS \
-  --admin-username <nazwa-użytkownika> \
-  --generate-ssh-keys
+ls -l ~/.ssh
 ```
 
-Pobierz adres IP maszyny wirtualnej:
+Powinny znajdować się tam dwa pliki o nazwach `github` i `github.pub`.
+
+3. Wyświetl klucz publiczny:
 
 ```sh
-az vm list-ip-addresses \
-  --resource-group <grupa-zasobów> \
-  --name <nazwa-maszyny-wirtualnej> \
-  --output table
+cat ~/.ssh/github.pub
 ```
 
-Zaloguj się do maszyny wirtualnej:
+4. Skopiuj zawartość klucza publicznego do schowka.
+
+5. Przejdź do serwisu GitHub i z menu w prawym górym rogu wybierz *Settings*:
+
+![](images/github-menu-ustawienia.png)
+
+6. Przejdź do zakładki *Settings* a następnie *SSH and GPG keys*:
+
+![](images/github-ustawienia-ssh.png)
+
+7. Kliknij przycisk *New SSH key*.
+
+8. W polu *Title* podaj nazwę klucza *Azure Cloud Shell*. W polu *Key* wklej klucz publiczny ze schowka. Kliknij przycisk *Add SSH key*:
+
+![](images/github-dodawanie-klucza-ssh.png)
+
+9. Sprawdź czy na liście kluczy pojawił się nowy wpis:
+
+![](images/github-lista-kluczy-ssh.png)
+
+10. Edytuj plik z ustawieniami SSH:
 
 ```sh
-ssh <nazwa-użytkownika>@<adres-ip-maszyny-wirtualnej>
+nano ~/.ssh/config
 ```
 
-**Instalacja oprogramowania**
-
-Zainstaluj narzędzia Azure CLI:
+11. Wklej następującą konfigurację:
 
 ```sh
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+Host github.com
+  Hostname github.com
+  User git
+  IdentityFile ~/.ssh/github
 ```
 
-Zainstaluj Node Version Manager:
+12. Przejdź do repozytorium w serwisie [GitHub](https://github.com) i skopiuj adres klonowania SSH:
+
+![](images/github-klonowanie-repo-ssh.png)
+
+13. Zmień adres zdalnego repozytorium:
 
 ```sh
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
+git remote set-url origin <adres-url-repozytorium>
 ```
 
-Wyloguj się a następnie zaloguj ponownie do maszyny wirtualnej aby móc korzystać z poleceń `az` i `nvm`.
-
-Zainstaluj Node.js w najnowszej wersji LTS:
+14. Usuń wszystkie pliki i katalogi, które nie znajdują się na poniższej liście:
 
 ```sh
-nvm install --lts
+drwxrwxr-x   8 zajecia zajecia   4096 Mar  4 09:18 .
+drwxr-xr-x  10 zajecia zajecia   4096 Mar  4 09:17 ..
+drwxrwxr-x   8 zajecia zajecia   4096 Mar  4 11:01 .git
+-rw-rw-r--   1 zajecia zajecia   1610 Mar  4 09:16 .gitignore
+-rw-rw-r--   1 zajecia zajecia   1072 Mar  4 09:16 LICENSE
+-rw-rw-r--   1 zajecia zajecia    900 Mar  4 09:16 app.js
+drwxr-xr-x   2 zajecia zajecia   4096 Mar  4 09:16 bin
+drwxrwxr-x 287 zajecia zajecia  12288 Mar  4 09:18 node_modules
+-rw-rw-r--   1 zajecia zajecia 121443 Mar  4 09:18 package-lock.json
+-rw-rw-r--   1 zajecia zajecia    619 Mar  4 09:18 package.json
+drwxr-xr-x   5 zajecia zajecia   4096 Mar  4 09:16 public
+drwxr-xr-x   2 zajecia zajecia   4096 Mar  4 09:16 routes
+drwxr-xr-x   2 zajecia zajecia   4096 Mar  4 09:16 views
 ```
 
-```sh
-git config --global user.name "<imię-i-nazwisko>"
-git config --global user.email "<adres-email>"
-```
+Użyj polecenia `ls -la` aby wylistować zawartość katalogu.
 
-Ściągnij repozytorium git utworzone w serwisie GitHub na maszynę wirtualną:
-
-```sh
-git clone <url-repozytorium>
-```
-
-Adres (URL) repozytorium znajdziesz na karcie repozytorium w serwisie [GitHub](https://github.com). Po ściągnięciu repozytorium, w katalogu bieżącym powinien pojawić się nowy katalog o tej samej nazwie co nazwa repozytorium. Przejdź do tego katalogu:
-
-```sh
-cd <nazwa-repozytorium>
-```
-
-## Tworzenie i uruchamianie aplikacji w Node.js lokalnie
-
-**Tworzenie aplikacji**
-
-Zainstaluj globalną zależność `koa-generator`:
-
-```sh
-npm install -g koa-generator
-```
-
-Wygeneruj projekt startowy:
-
-```sh
-koa2 .
-```
-
-Zainstaluj lokalne zależności:
-
-```sh
-npm install
-```
-
-**Otwieranie portów maszyny wirtualnej**
-
-Zaloguj się w Azure w wierszu poleceń:
-
-```sh
-az login
-```
-
-```sh
-az vm open-port \
-  --resource-group <grupa-zasobów> \
-  --name <nazwa-maszyny-wirtualnej> \
-  --port 3000
-```
-
-**Uruchomienie aplikacji**
-
-Uruchom aplikację:
-
-```sh
-npm start
-```
-
-Otwórz stronę pod adresem `<ip-maszyny-wirtualnej>:3000`. Załadowana strona powinna zawierać treść zgodną z poniższym zrzutem ekranu.
-
-![](./images/PAA_C02_Test.png)
-
-Działanie aplikacji możesz zatrzymać używając skrótu `Ctrl+C`.
-
-## Wdrożenie aplikacji w usłudze Azure App Service
-
-**Tworzenie aplikacji**
-
-Utwórz plan usługi Azure App Service:
-
-```sh
-az appservice plan create \
-  --resource-group <grupa-zasobów> \
-  --name <nazwa-planu> \
-  --sku FREE
-```
-
-Utwórz nową aplikację:
-
-```sh
-az webapp create \
-  --resource-group <grupa-zasobów> \
-  --name <nazwa-aplikacji> \
-  --plan <nazwa-planu> \
-  --runtime "node|10.15"
-```
-
-**Wdrażanie aplikacji**
-
-Utwórz użytkownika wdrożenia:
-
-```sh
-az webapp deployment user set \
-  --user-name <nazwa-użytkownika> \
-  --password <hasło-użytkownika>
-```
-
-Pobierz URL repozytorium dla wdrożenia:
-
-```sh
-az webapp deployment source config-local-git \
-  --resource-group <grupa-zasobów> \
-  --name <nazwa-aplikacji> \
-  --query url \
-  --output tsv
-```
-
-```sh
-git remote add azure <url-repozytorium-wdrożenia>
-```
-
-Dodaj wszystkie pliki lokalne:
+15. Dodaj pliki:
 
 ```sh
 git add --all
 ```
 
-Utwórz commit:
+16. Zatwierdź zmianę:
 
 ```sh
-git commit -m 'Tworzenie i wdrażanie aplikacji'
+git commit -m "Usunięto zbędne pliki"
 ```
 
-Wypchnij zmiany do repozytorium usług Azure App Service:
+17. Utwórz plik README.md:
 
 ```sh
-git push azure master
+touch README.md
 ```
 
-Sprawdź czy aplikacja działa poprawnie przechodząc pod adres `<nazwa-aplikacji>.azurewebsites.net`
+18. Dodaj plik:
 
-## Zapisanie projektu w serwisie GitHub
+```sh
+git add README.md
+```
 
-Wypchij zmiany do repozytorium w serwisie GitHub
+19. Zatwierdź zmianę:
+
+```sh
+git commit -m "Dodano plik README"
+```
+
+20. Wypchnij zmiany do repozytorium w serwisie GitHub:
 
 ```sh
 git push origin master
 ```
+
+## Zadanie 2
+Utwórz nową gałąź o nazwie *develop* w repozytorium lokalnym i wypchnij ją do repozytorium w serwisie GitHub.
+
+## Zadanie 3
+Zmodyfikuj historię repozytorium tak, aby znajdowały się w niej dwie zmiany. Najstarsza o treści Utworzenie projektu w której znajdują się pliki projektu wygenerowane na poprzednich zajęciach. Druga o treści Dodano plik README.
