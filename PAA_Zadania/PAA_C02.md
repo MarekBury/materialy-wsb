@@ -80,7 +80,6 @@ drwxrwxr-x   8 zajecia zajecia   4096 Mar  4 11:01 .git
 -rw-rw-r--   1 zajecia zajecia   1072 Mar  4 09:16 LICENSE
 -rw-rw-r--   1 zajecia zajecia    900 Mar  4 09:16 app.js
 drwxr-xr-x   2 zajecia zajecia   4096 Mar  4 09:16 bin
-drwxrwxr-x 287 zajecia zajecia  12288 Mar  4 09:18 node_modules
 -rw-rw-r--   1 zajecia zajecia 121443 Mar  4 09:18 package-lock.json
 -rw-rw-r--   1 zajecia zajecia    619 Mar  4 09:18 package.json
 drwxr-xr-x   5 zajecia zajecia   4096 Mar  4 09:16 public
