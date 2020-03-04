@@ -195,3 +195,9 @@ git push azure master
 20. Otwórz przeglądarkę internetową i sprawdź działanie aplikacji:
 
 ![](images/aplikacja-app-service.png)
+
+21. Wypchij zmiany do repozytorium GitHub:
+
+```sh
+git push origin master
+```
