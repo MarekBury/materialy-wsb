@@ -82,10 +82,16 @@ git clone <adres-url-repozytorium>
 cd projekt-paa
 ```
 
-4. Wygeneruj aplikację narzędziem koa-generator:
+4. Zainstaluj `koa-generator`:
 
 ```sh
-npx koa-generator
+npm install -g koa-generator
+```
+
+Wygeneruj kod projektu:
+
+```sh
+koa2
 ```
 
 5. Zainstaluj zależności:
