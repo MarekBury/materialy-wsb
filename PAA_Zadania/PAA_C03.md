@@ -86,7 +86,7 @@ Zastąp `<nazwa-aplikacji>` nazwą swojej aplikacji App Service.
 
 ![](images/github-sekrety.png)
 
-11. Kliknij przycisk *Add new secret*. W polu *Name* wpisz AZURE_WEBAPP_PUBLIC_PROFILE a w polu *Value* wklej zawartość skopiowaną do schowka:
+11. Kliknij przycisk *Add new secret*. W polu *Name* wpisz AZURE_WEBAPP_PUBLISH_PROFILE a w polu *Value* wklej zawartość skopiowaną do schowka:
 
 ![](images/github-dodaj-sekret.png)
 
