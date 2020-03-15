@@ -57,7 +57,7 @@ Zapisz zmiany i zamknij edytor.
 3. Otwóz plik `app.js` do edycji:
 
 ```sh
-nano routes/app.js
+nano app.js
 ```
 
 Zaimportuj plik `routes/tasks.js` w pliku `app.js`:
@@ -101,6 +101,12 @@ Zapisz zmiany i zamknij edytor.
 
 ```sh
 nano store.js
+```
+
+Zaimportuj pakiet UUID:
+
+```js
+const uuid = require('uuid')
 ```
 
 Dodaj poniższą implementację funkcji `createTask` w pliku `store.js`:
