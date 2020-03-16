@@ -63,7 +63,7 @@ nano app.js
 Zaimportuj plik `routes/tasks.js` w pliku `app.js`:
 
 ```js
-const tasks = require('./routes/tasks)
+const tasks = require('./routes/tasks')
 ```
 
 Dodaj trasy do konfiguracji aplikacji w pliku `app.js`:
