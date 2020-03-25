@@ -19,6 +19,8 @@ ssh <nazwa-użytkownika>@<adres-ip-maszyny-wirtualnej>
 cd projekt-paa && git checkout master
 ```
 
+**Uwaga:** Studenci, którzy wykonali na poprzednich zajęciach zadania na wyższe oceny muszą zachować dotychczasową funkcjonalność aplikacji.
+
 ## Zadanie 1
 
 Na stronie głównej umieść tabelę w której wyświetlane będą wszystkie zadania dodane przez użytkownika aplikacji (zapisane w tabeli `tasks`). Tabela powinna składać się z jednej kolumny, a każdy wiersz powienien zawierać tytuł zadania. Wszystkie zmiany wypchnij do repozytorium projektu w serwisie GitHub.
@@ -32,12 +34,12 @@ nano views/index.pug
 Na końcu bloku `content` (pod formularzem dodawania zadania) dodaj strukturę tabeli:
 
 ```pug
-table
-  tr
-    th(scope= "col") Tytuł
-  each task in tasks
+  table
     tr
-      td= task.title
+      th(scope= "col") Tytuł
+    each task in tasks
+      tr
+        td= task.title
 ```
 
 Zapisz zmiany i zamknij edytor.
@@ -95,7 +97,7 @@ Wyeksportuj funkcję `listTasks` z pliku:
 module.exports = {
   init,
   createTask,
-  listTasks,
+  listTasks
 }
 ```
 
@@ -104,7 +106,7 @@ Zapisz zmiany i zamknij edytor.
 4. Zatwierdź zmiany w repozytorium:
 
 ```sh
-git add --all git commit -m 'Dodano wyświetlanie listy zadań'
+git add --all && git commit -m 'Dodano wyświetlanie listy zadań'
 ```
 
 5. Wypchnij zmiany do repozytorium projektu w serwisie GitHub:
@@ -117,7 +119,7 @@ git push origin master
 
 Poczekaj na wdrożenie aplikacji obserwując akcję w zakładce `Actions` w serwisie GitHub. Po pomyślnym wdrożeniu, przejdź na stronę aplikacji i spróbuj dodać nowe zadanie. Sprawdź czy zadania wyświetlają się na liście.
 
-![](images/aplikacja-lista-zadan-1.png)
+![](images/aplikacja-lista-zadan.png)
 
 ## Zadanie 2
 

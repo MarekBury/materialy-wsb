@@ -1,4 +1,4 @@
-# Łączenie aplikacji z usługą Azure Table
+# Programowanie dodawanie zadań do listy
 
 ## Materiały
 
@@ -19,6 +19,8 @@ ssh <nazwa-użytkownika>@<adres-ip-maszyny-wirtualnej>
 ```sh
 cd projekt-paa && git checkout master
 ```
+
+**Uwaga:** Studenci, którzy wykonali na poprzednich zajęciach zadania na wyższe oceny muszą zachować dotychczasową funkcjonalność aplikacji.
 
 ## Zadanie 1
 
